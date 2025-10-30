@@ -25,7 +25,7 @@ CUSTOM_SORT_ORDER = {
         "martech",
         "otros",
     ],
-    "IntegracionProcesos": [
+    "integracionprocesos": [
         "api_management_gateway",
         "microservicios",
         "event_broker",
@@ -79,17 +79,13 @@ CRITERIA_DB_MAP = {
     "estabilidad": "ha_presentado_caidas_o_degradacion_del_servicio_en_los_ultimo_1",
     "extensibilidad": "extensibilidad",
     "seguridad": "seguridad",
-    "ux": "ux",
-    # Criterio 'agilidad' depende de dos columnas
-    "agilidad": ("devops_1", "despliegue_a_pdn_automatizado_1"),
-    # Criterios Fijos (no dependen de la BD)
+    # Criterio Fijo (no depende de la BD)
     "acople": None,  # Siempre es "Parcialmente"
-    "cobertura": None,  # Siempre está vacío
     # Iconos de la fila
     "icon_sas": "sas",
     "icon_cots": "nivel_de_customizacion",
     "icon_cloud": "nube_vs_onpremise",
-    "icon_regional": "bns",  # Usa la misma columna que extensibilidad
+    "icon_regional": "bns_1",
     # Tecnología
     "tecnologia": "tecnologia_subyacente",
 }

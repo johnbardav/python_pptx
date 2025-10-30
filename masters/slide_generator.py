@@ -54,9 +54,6 @@ HEADER_LABELS = {
     "estabilidad": "Estabilidad",
     "extensibilidad": "Extensibilidad",
     "seguridad": "Seguridad",
-    "cobertura": "Cobertura",
-    "ux": "UX",
-    "agilidad": "Agilidad",
 }
 # Asegurarnos de usar los nombres de columna de la BD (con '_')
 COLUMN_ORDER = [
@@ -72,9 +69,6 @@ COLUMN_ORDER = [
     "estabilidad",
     "extensibilidad",
     "seguridad",
-    "cobertura",
-    "ux",
-    "agilidad",
 ]
 COLUMN_WIDTHS = {
     "aplicaciones": APP_TEXTBOX_WIDTH,
@@ -89,9 +83,6 @@ COLUMN_WIDTHS = {
     "estabilidad": Cm(2.0),
     "extensibilidad": Cm(2.0),
     "seguridad": Cm(2.0),
-    "cobertura": Cm(2.0),
-    "ux": Cm(2.0),
-    "agilidad": Cm(2.0),
 }
 
 
@@ -141,109 +132,97 @@ def evaluar_criterios(row, bank_name, criteria_map):
     resultados = {}
 
     # --- 1. OBSOLESCENCIA ---
+    # Regla: 0 o vacío -> Vacío. "No obsoleto" -> Cumple. "Obsoleto" -> No Cumple.
     col_obs = criteria_map.get("obsolescencia")
-    valor_obs = get_value_from_row(row, col_obs)
-    if valor_obs:
-        valor_lower = valor_obs.lower()
-        if bank_name == "BuyerBank":
-            if "vigente" in valor_lower:
-                resultados["obsolescencia"] = "Cumple"
-            else:
-                resultados["obsolescencia"] = "No Cumple"
-        elif bank_name == "BoughtBank":
-            if "no obsoleto" in valor_lower:
-                resultados["obsolescencia"] = "Cumple"
-            elif "obsoleto" in valor_lower:
-                resultados["obsolescencia"] = "No Cumple"
-            else:
-                resultados["obsolescencia"] = ""
-    else:
+    valor_obs_raw = get_value_from_row(row, col_obs)
+
+    if not valor_obs_raw or valor_obs_raw == "0":
         resultados["obsolescencia"] = ""
+    else:
+        valor_lower = valor_obs_raw.lower()
+        if "no obsoleto" in valor_lower:
+            resultados["obsolescencia"] = "Cumple"
+        elif "obsoleto" in valor_lower:
+            resultados["obsolescencia"] = "No Cumple"
+        else:
+            resultados["obsolescencia"] = ""
 
     # --- 2. ESCALABILIDAD ---
+    # Regla: "Si" -> Cumple. "No" -> No Cumple.
     col_esc = criteria_map.get("escalabilidad")
-    escalabilidad_map = {"SI": "Cumple", "NO": "No Cumple"}
     valor_esc_raw = get_value_from_row(row, col_esc)
-    valor_esc = valor_esc_raw.upper() if valor_esc_raw else None
-    resultados["escalabilidad"] = escalabilidad_map.get(valor_esc, "")
+
+    if valor_esc_raw:
+        valor_upper = valor_esc_raw.upper()
+        if valor_upper == "SI":
+            resultados["escalabilidad"] = "Cumple"
+        elif valor_upper == "NO":
+            resultados["escalabilidad"] = "No Cumple"
+        else:
+            resultados["escalabilidad"] = ""
+    else:
+        resultados["escalabilidad"] = ""
 
     # --- 3. ACOPLE ---
-    if criteria_map.get("acople") is None:
-        resultados["acople"] = "Parcialmente"  # Lógica hardcodeada
-    else:
-        # (Lógica futura si se mapea a una columna)
-        resultados["acople"] = ""
+    # Regla: Siempre "Parcialmente" por defecto.
+    resultados["acople"] = "Parcialmente"
 
     # --- 4. ESTABILIDAD ---
+    # Regla: 0 or vacío -> Vacío. "Si" -> No Cumple. "No" -> Cumple.
     col_estab = criteria_map.get("estabilidad")
-    estabilidad_map = {"NO": "Cumple", "SI": "No Cumple"}
     valor_estab_raw = get_value_from_row(row, col_estab)
-    valor_estab = valor_estab_raw.upper() if valor_estab_raw else None
-    resultados["estabilidad"] = estabilidad_map.get(valor_estab, "")
 
-    # --- 5. AGILIDAD ---
-    col_agilidad_devops, col_agilidad_despliegue = criteria_map.get(
-        "agilidad", (None, None)
-    )
-    devops_raw = get_value_from_row(row, col_agilidad_devops)
-    despliegue_raw = get_value_from_row(row, col_agilidad_despliegue)
-
-    devops = devops_raw.upper() if devops_raw else None
-    despliegue = despliegue_raw.upper() if despliegue_raw else None
-
-    if devops == "NO":
-        resultados["agilidad"] = "No Cumple"
-    elif devops == "SI" and despliegue == "SI":
-        resultados["agilidad"] = "Cumple"
-    elif devops == "SI":
-        resultados["agilidad"] = "Parcialmente"
+    if not valor_estab_raw or valor_estab_raw == "0":
+        resultados["estabilidad"] = ""
     else:
-        resultados["agilidad"] = ""
+        valor_upper = valor_estab_raw.upper()
+        if valor_upper == "SI":
+            resultados["estabilidad"] = "No Cumple"
+        elif valor_upper == "NO":
+            resultados["estabilidad"] = "Cumple"
+        else:
+            resultados["estabilidad"] = ""
 
-    # --- 6. EXTENSIBILIDAD ---
+    # --- 5. EXTENSIBILIDAD ---
+    # Regla: "Cumple" -> Cumple. "Parcialmente" -> Parcialmente.
     col_ext = criteria_map.get("extensibilidad")
-    extensibilidad_map = {
-        "Regional": "Cumple",
-        "Global": "Cumple",
-        "Local": "No Cumple",
-    }
-    # Lógica de negocio: depende de la obsolescencia
-    if resultados.get("obsolescencia") == "No Cumple":
-        resultados["extensibilidad"] = "No Cumple"
-    else:
-        valor_ext = get_value_from_row(row, col_ext)
-        resultados["extensibilidad"] = extensibilidad_map.get(
-            valor_ext.title() if valor_ext else None, ""
-        )
+    valor_ext_raw = get_value_from_row(row, col_ext)
 
-    # --- 7. SEGURIDAD ---
+    if valor_ext_raw:
+        valor_title = valor_ext_raw.title()
+        if valor_title == "Cumple":
+            resultados["extensibilidad"] = "Cumple"
+        elif valor_title == "Parcialmente":
+            resultados["extensibilidad"] = "Parcialmente"
+        else:
+            resultados["extensibilidad"] = ""
+    else:
+        resultados["extensibilidad"] = ""
+
+    # --- 6. SEGURIDAD ---
+    # Regla: 0 o vacío -> "" (Vacío). 1 o 2 -> No Cumple. 3 -> Parcialmente. 4 o 5 -> Cumple.
     col_seg = criteria_map.get("seguridad")
     valor_seg_raw = get_value_from_row(row, col_seg)
+
     try:
-        valor_seg_num = float(valor_seg_raw)
-        if valor_seg_num <= 2:
-            resultados["seguridad"] = "No Cumple"
-        elif valor_seg_num == 3:
-            resultados["seguridad"] = "Parcialmente"
-        elif valor_seg_num >= 4:
-            resultados["seguridad"] = "Cumple"
+        if not valor_seg_raw or str(valor_seg_raw) == "0":
+            resultados["seguridad"] = ""
+        else:
+            valor_seg_num = float(valor_seg_raw)
+            if valor_seg_num in (1, 2):
+                resultados["seguridad"] = "No Cumple"
+            elif valor_seg_num == 3:
+                resultados["seguridad"] = "Parcialmente"
+            elif valor_seg_num in (4, 5):
+                resultados["seguridad"] = "Cumple"
+            else:
+                resultados["seguridad"] = "N/A"
+    except (ValueError, TypeError):
+        # Si el valor es texto (ej. "N/A" del excel)
+        if valor_seg_raw and valor_seg_raw.upper() == "N/A":
+            resultados["seguridad"] = "N/A"
         else:
             resultados["seguridad"] = ""
-    except (ValueError, TypeError):
-        resultados["seguridad"] = ""
-
-    # --- 8. COBERTURA ---
-    if criteria_map.get("cobertura") is None:
-        resultados["cobertura"] = ""  # Lógica hardcodeada
-    else:
-        resultados["cobertura"] = ""
-
-    # --- 9. UX ---
-    col_ux = criteria_map.get("ux")
-    ux_map = {"SI": "Cumple", "NO": "No Cumple"}
-    valor_ux_raw = get_value_from_row(row, col_ux)
-    valor_ux = valor_ux_raw.upper() if valor_ux_raw else None
-    resultados["ux"] = ux_map.get(valor_ux, "")
 
     return resultados
 
@@ -349,6 +328,7 @@ def generate_slide_for_subdomain(
         "Cumple": "si",
         "No Cumple": "no",
         "Parcialmente": "parcial",
+        "N/A": "na",
     }
 
     # Iterar sobre las líneas de app (ya no se lee de un archivo)
