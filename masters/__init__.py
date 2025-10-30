@@ -11,6 +11,6 @@ from .excel_loader import load_master_excels
 # From db_loader.py (used by main.py)
 from .db_loader import load_data_from_db
 
-# --- NUEVO ---
+# --- MODIFICADO ---
 # From slide_generator.py (used by main.py)
-from .slide_generator import generate_slide_for_txt, normalize_string
+from .slide_generator import generate_slide_for_subdomain, normalize_string

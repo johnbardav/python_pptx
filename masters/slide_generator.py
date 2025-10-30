@@ -19,6 +19,9 @@ from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import warnings
 
+# --- IMPORTAMOS LA PLANTILLA BASE ---
+from .base_slide import create_base_slide
+
 # Ocultar warnings de openpyxl
 warnings.filterwarnings("ignore", category=UserWarning, module="openpyxl")
 
@@ -116,7 +119,7 @@ def get_value_from_row(row, col_name):
     Obtiene un valor único de una fila (un pd.Series),
     manejando columnas duplicadas (ej. 'banco_1').
     """
-    if col_name not in row.index:
+    if not col_name or col_name not in row.index:
         return None
 
     value = row[col_name]
@@ -130,16 +133,16 @@ def get_value_from_row(row, col_name):
     return None
 
 
-def evaluar_criterios(row, bank_name):
+def evaluar_criterios(row, bank_name, criteria_map):
     """
-    Evalúa los criterios para una aplicación (fila) basado en la lógica
-    del script 1_generador_madurez_y_reportes.py.
+    Evalúa los criterios para una aplicación (fila) usando el mapeo
+    proporcionado por 'config.py'.
     """
     resultados = {}
 
     # --- 1. OBSOLESCENCIA ---
-    # Nota: Los nombres de columna ya están limpios por load_database.py
-    valor_obs = get_value_from_row(row, "nivel_de_obsolescencia")
+    col_obs = criteria_map.get("obsolescencia")
+    valor_obs = get_value_from_row(row, col_obs)
     if valor_obs:
         valor_lower = valor_obs.lower()
         if bank_name == "BuyerBank":
@@ -158,27 +161,32 @@ def evaluar_criterios(row, bank_name):
         resultados["obsolescencia"] = ""
 
     # --- 2. ESCALABILIDAD ---
+    col_esc = criteria_map.get("escalabilidad")
     escalabilidad_map = {"SI": "Cumple", "NO": "No Cumple"}
-    # Usamos el nombre de columna acortado de la BD
-    valor_esc_raw = get_value_from_row(row, "tiene_alta_disponibilidad")
+    valor_esc_raw = get_value_from_row(row, col_esc)
     valor_esc = valor_esc_raw.upper() if valor_esc_raw else None
     resultados["escalabilidad"] = escalabilidad_map.get(valor_esc, "")
 
     # --- 3. ACOPLE ---
-    resultados["acople"] = "Parcialmente"
+    if criteria_map.get("acople") is None:
+        resultados["acople"] = "Parcialmente"  # Lógica hardcodeada
+    else:
+        # (Lógica futura si se mapea a una columna)
+        resultados["acople"] = ""
 
     # --- 4. ESTABILIDAD ---
+    col_estab = criteria_map.get("estabilidad")
     estabilidad_map = {"NO": "Cumple", "SI": "No Cumple"}
-    # Usamos el nombre de columna acortado de la BD
-    valor_estab_raw = get_value_from_row(
-        row, "ha_presentado_caidas_o_degradacion_del_servicio_en_los_ultimo"
-    )
+    valor_estab_raw = get_value_from_row(row, col_estab)
     valor_estab = valor_estab_raw.upper() if valor_estab_raw else None
     resultados["estabilidad"] = estabilidad_map.get(valor_estab, "")
 
     # --- 5. AGILIDAD ---
-    devops_raw = get_value_from_row(row, "devops")
-    despliegue_raw = get_value_from_row(row, "despliegue_a_pdn_automatizado")
+    col_agilidad_devops, col_agilidad_despliegue = criteria_map.get(
+        "agilidad", (None, None)
+    )
+    devops_raw = get_value_from_row(row, col_agilidad_devops)
+    despliegue_raw = get_value_from_row(row, col_agilidad_despliegue)
 
     devops = devops_raw.upper() if devops_raw else None
     despliegue = despliegue_raw.upper() if despliegue_raw else None
@@ -193,21 +201,24 @@ def evaluar_criterios(row, bank_name):
         resultados["agilidad"] = ""
 
     # --- 6. EXTENSIBILIDAD ---
+    col_ext = criteria_map.get("extensibilidad")
     extensibilidad_map = {
         "Regional": "Cumple",
         "Global": "Cumple",
         "Local": "No Cumple",
     }
+    # Lógica de negocio: depende de la obsolescencia
     if resultados.get("obsolescencia") == "No Cumple":
         resultados["extensibilidad"] = "No Cumple"
     else:
-        valor_ext = get_value_from_row(row, "bns")  # Asumiendo que 'bns' es la columna
+        valor_ext = get_value_from_row(row, col_ext)
         resultados["extensibilidad"] = extensibilidad_map.get(
             valor_ext.title() if valor_ext else None, ""
         )
 
     # --- 7. SEGURIDAD ---
-    valor_seg_raw = get_value_from_row(row, "seguridad")
+    col_seg = criteria_map.get("seguridad")
+    valor_seg_raw = get_value_from_row(row, col_seg)
     try:
         valor_seg_num = float(valor_seg_raw)
         if valor_seg_num <= 2:
@@ -222,11 +233,15 @@ def evaluar_criterios(row, bank_name):
         resultados["seguridad"] = ""
 
     # --- 8. COBERTURA ---
-    resultados["cobertura"] = ""  # Lógica no definida en la referencia
+    if criteria_map.get("cobertura") is None:
+        resultados["cobertura"] = ""  # Lógica hardcodeada
+    else:
+        resultados["cobertura"] = ""
 
     # --- 9. UX ---
+    col_ux = criteria_map.get("ux")
     ux_map = {"SI": "Cumple", "NO": "No Cumple"}
-    valor_ux_raw = get_value_from_row(row, "ux")
+    valor_ux_raw = get_value_from_row(row, col_ux)
     valor_ux = valor_ux_raw.upper() if valor_ux_raw else None
     resultados["ux"] = ux_map.get(valor_ux, "")
 
@@ -293,56 +308,55 @@ def draw_main_header(slide, x_positions, y_pos):
         run.font.size = Pt(FONT_SIZE)
 
 
-# --- FUNCIÓN PRINCIPAL DEL MÓDULO ---
+# --- FUNCIÓN PRINCIPAL DEL MÓDULO (MODIFICADA) ---
 
 
-def generate_slide_for_txt(
-    app_list_filename,
+def generate_slide_for_subdomain(
+    prs,
+    subdomain_title,
+    app_lines_data,
     df_buyer,
     choices_buyer,
     df_bought,
     choices_bought,
+    criteria_map,  # <-- NUEVO PARÁMETRO
 ):
     """
-    Procesa un solo archivo .txt y genera un .pptx.
-    Adaptado de 'process_list_file' de 1_generador_madurez_y_reportes.py
+    Crea UN slide para un subdominio específico, usando la plantilla base.
     """
 
-    with open(app_list_filename, "r", encoding="utf-8") as f:
-        lines_to_process = [line.strip() for line in f if line.strip()]
+    print(f"    ▶️  Generando slide para el subdominio: {subdomain_title}...")
 
-    print(
-        f"    ▶️  Procesando {len(lines_to_process)} líneas de '{os.path.basename(app_list_filename)}'..."
-    )
+    # 1. CREAR EL SLIDE USANDO LA PLANTILLA BASE
+    slide = create_base_slide(prs, subdomain_title, "")
 
-    prs = Presentation()
-    prs.slide_width, prs.slide_height = Cm(33.867), Cm(19.05)
-    slide = prs.slides.add_slide(prs.slide_layouts[6])
+    # 2. DEFINIR COORDENADAS DE INICIO PARA EL CONTENIDO
+    START_X = Cm(1.54)
+    START_Y = Cm(5.22)  # Top del área de contenido
+
+    # 3. DIBUJAR LA TABLA
     x_positions = {}
-    current_x = Cm(1.5)
+    current_x = START_X
     for col_name in COLUMN_ORDER:
         x_positions[col_name] = current_x
         current_x += COLUMN_WIDTHS[col_name]
-    draw_main_header(slide, x_positions, Cm(1.0))
-    y_pos = Cm(1.0) + ROW_HEIGHT
+
+    draw_main_header(slide, x_positions, START_Y)
+
+    y_pos = START_Y + ROW_HEIGHT
+
     map_resultado_a_icono = {
         "Cumple": "si",
         "No Cumple": "no",
         "Parcialmente": "parcial",
     }
 
-    for line in lines_to_process:
+    # Iterar sobre las líneas de app (ya no se lee de un archivo)
+    for line_data in app_lines_data:
         try:
-            # Asumimos el formato 'pais', 'banco', 'app_name'
-            parts = re.findall(r'"(.*?)"', line)
-            if len(parts) != 3:
-                print(f"      ⚠️  Línea ignorada (formato incorrecto): '{line}'")
-                continue
-
-            country, bank, app_name = [part.strip() for part in parts]
+            country, bank, app_name = line_data
             bank_upper = bank.upper()
 
-            # Lógica neutral
             if "BUYERBANK" in bank_upper:
                 target_df, target_choices = df_buyer, choices_buyer
                 bank_name_eval = "BuyerBank"
@@ -351,11 +365,11 @@ def generate_slide_for_txt(
                 bank_name_eval = "BoughtBank"
             else:
                 print(
-                    f"      ⚠️  Banco no reconocido (use 'BuyerBank' o 'BoughtBank'): '{line}'"
+                    f"      ⚠️  Banco no reconocido (use 'BuyerBank' o 'BoughtBank'): '{line_data}'"
                 )
                 continue
         except Exception as e:
-            print(f"      ❌ Error procesando línea '{line}': {e}")
+            print(f"      ❌ Error procesando línea '{line_data}': {e}")
             continue
 
         excel_match_name = find_best_match(app_name, target_choices)
@@ -376,17 +390,17 @@ def generate_slide_for_txt(
         p.font.size = Pt(FONT_SIZE)
 
         if row is not None:
-            # Evaluar criterios
-            resultados_evaluacion = evaluar_criterios(row, bank_name_eval)
+            # Evaluar criterios usando el MAPA
+            resultados_evaluacion = evaluar_criterios(row, bank_name_eval, criteria_map)
 
             # Dibujar Iconos (SAS, COTS, CLOUD, REGIONAL)
-            val_sas = get_value_from_row(row, "sas")
+            val_sas = get_value_from_row(row, criteria_map.get("icon_sas"))
             if val_sas and normalize_string(val_sas) == "si":
                 icon_path = os.path.join(ICONS_FOLDER, "sass.png")
                 x_icon = x_positions["sas"] + (COLUMN_WIDTHS["sas"] - ICON_SIZE) / 2
                 add_image(slide, icon_path, x_icon, y_icon_pos)
 
-            val_custom = get_value_from_row(row, "nivel_de_customizacion")
+            val_custom = get_value_from_row(row, criteria_map.get("icon_cots"))
             if val_custom:
                 valor_customizacion = normalize_string(val_custom)
                 if valor_customizacion in ["cots", "cots con observacion"]:
@@ -396,13 +410,13 @@ def generate_slide_for_txt(
                     )
                     add_image(slide, icon_path, x_icon, y_icon_pos)
 
-            val_nube = get_value_from_row(row, "nube_vs_onpremise")
+            val_nube = get_value_from_row(row, criteria_map.get("icon_cloud"))
             if val_nube and normalize_string(val_nube) == "nube":
                 icon_path = os.path.join(ICONS_FOLDER, "cloud.svg")
                 x_icon = x_positions["cloud"] + (COLUMN_WIDTHS["cloud"] - ICON_SIZE) / 2
                 add_image(slide, icon_path, x_icon, y_icon_pos)
 
-            val_bns_raw = get_value_from_row(row, "bns")
+            val_bns_raw = get_value_from_row(row, criteria_map.get("icon_regional"))
             if val_bns_raw:
                 valor_bns_norm = normalize_string(val_bns_raw)
                 if "regional" in valor_bns_norm or "global" in valor_bns_norm:
@@ -414,7 +428,7 @@ def generate_slide_for_txt(
                     add_image(slide, icon_path, x_icon, y_icon_pos)
 
             # Escribir Tecnología
-            tech_text = get_value_from_row(row, "tecnologia_subyacente")
+            tech_text = get_value_from_row(row, criteria_map.get("tecnologia"))
             if tech_text:
                 if len(tech_text) > TECH_TRUNCATE_LENGTH:
                     tech_text = tech_text[:TECH_TRUNCATE_LENGTH] + "..."
@@ -425,9 +439,12 @@ def generate_slide_for_txt(
                     TEXTBOX_HEIGHT,
                 )
                 tf_tec = textbox_tec.text_frame
-                tf_tec.margin_left = tf_tec.margin_right = tf_tec.margin_top = (
-                    tf_tec.margin_bottom
-                ) = 0
+                (
+                    tf_tec.margin_left,
+                    tf_tec.margin_right,
+                    tf_tec.margin_top,
+                    tf_tec.margin_bottom,
+                ) = 0, 0, 0, 0
                 tf_tec.vertical_anchor = MSO_ANCHOR.MIDDLE
                 p_tec = tf_tec.paragraphs[0]
                 p_tec.text = tech_text
@@ -459,17 +476,3 @@ def generate_slide_for_txt(
                     add_image(slide, icon_path, x_icon, y_icon_pos)
 
         y_pos += ROW_HEIGHT
-
-    # Guardar el PPTX
-    relative_path = os.path.relpath(app_list_filename, "inputs")
-    relative_path_no_ext, _ = os.path.splitext(relative_path)
-    output_relative_path = relative_path_no_ext + ".pptx"
-    output_path = os.path.join(OUTPUT_FOLDER, output_relative_path)
-    output_dir = os.path.dirname(output_path)
-    os.makedirs(output_dir, exist_ok=True)
-
-    try:
-        prs.save(output_path)
-        print(f"    ✅ ¡Éxito! El archivo '{output_path}' ha sido generado.")
-    except Exception as e:
-        print(f"    ❌ ERROR al guardar '{output_path}': {e}")
