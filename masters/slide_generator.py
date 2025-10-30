@@ -45,6 +45,18 @@ COUNTRY_ICONS = {
     "EEUU - Miami (US)": "us.png",
 }
 
+# --- NUEVO: Orden de agrupación ---
+COUNTRY_SORT_ORDER = {
+    "Colombia (CO)": 1,
+    "Panamá (PA)": 2,
+    "Costa Rica (CR)": 3,
+    "Honduras (HN)": 4,
+    "El Salvador (SV)": 5,
+    "EEUU - Miami (US)": 6,
+}
+BANK_SORT_ORDER = {"BuyerBank": 1, "BoughtBank": 2}
+# --- Fin de Orden ---
+
 # Parámetros (tomados de 1_generador_madurez_y_reportes.py)
 SIMILARITY_THRESHOLD = 0.90
 TECH_TRUNCATE_LENGTH = 33
@@ -55,7 +67,7 @@ FONT_SIZE = 8
 
 INDICATOR_ICONS = {"si": "si.svg", "no": "no.svg", "parcial": "na.svg", "na": "na.svg"}
 HEADER_LABELS = {
-    "pais_icon": "",
+    "pais_icon": "País",
     "banco_icon": "",
     "aplicaciones": "Aplicaciones",
     "sas": "",
@@ -108,8 +120,8 @@ COLUMN_WIDTHS = {
 GAPS = {
     "pais_icon": Cm(0.71),
     "banco_icon": Cm(0.42),
-    "aplicaciones": Cm(0.2),
-    "regional": Cm(0.2),  # Gap después de regional, antes de tech
+    # "aplicaciones" ya no se usa para calcular la siguiente posición
+    "regional": Cm(0.05),  # Gap después de regional, antes de tech
 }
 
 
@@ -315,28 +327,42 @@ def calculate_positions(start_x):
     """
     positions = {}
 
-    # --- Lado Izquierdo (L-R) ---
-    cols_left_to_right = [
+    # --- Lado Izquierdo (L-R) - Parte 1 ---
+    cols_left_part1 = [
         "pais_icon",
         "banco_icon",
         "aplicaciones",
-        "sas",
-        "cloud",
-        "cots",
-        "regional",
-        "tecnologia_subyacente",
     ]
 
     current_x = start_x
-    for col_name in cols_left_to_right:
+    for col_name in cols_left_part1:
         positions[col_name] = current_x
         current_x += COLUMN_WIDTHS[col_name]
-        # Añadir Gaps
         if col_name in GAPS:
             current_x += GAPS[col_name]
 
+    # --- Bloque de Iconos (Posición Absoluta) ---
+    current_x = Cm(10.70)  # <-- POSICIÓN ACTUALIZADA
+
+    positions["sas"] = current_x
+    current_x += COLUMN_WIDTHS["sas"]
+
+    positions["cloud"] = current_x
+    current_x += COLUMN_WIDTHS["cloud"]
+
+    positions["cots"] = current_x
+    current_x += COLUMN_WIDTHS["cots"]
+
+    positions["regional"] = current_x
+    current_x += COLUMN_WIDTHS["regional"]
+
+    # --- Lado Izquierdo (L-R) - Parte 2 (Tecnología) ---
+    if "regional" in GAPS:
+        current_x += GAPS["regional"]
+
+    positions["tecnologia_subyacente"] = current_x
+
     # --- Lado Derecho (R-L) ---
-    # El área de contenido total es Cm(30.8) de ancho, comenzando en Cm(1.54)
     END_X = Cm(1.54) + Cm(30.8)
 
     cols_right_to_left = [
@@ -348,12 +374,10 @@ def calculate_positions(start_x):
         "obsolescencia",
     ]
 
-    current_x = END_X
+    current_x_rtl = END_X
     for col_name in cols_right_to_left:
-        # Resta el ancho de la columna y luego asigna la posición
-        current_x -= COLUMN_WIDTHS[col_name]
-        positions[col_name] = current_x
-        # (Aquí se podrían agregar gaps entre criterios si fuera necesario)
+        current_x_rtl -= COLUMN_WIDTHS[col_name]
+        positions[col_name] = current_x_rtl
 
     return positions
 
@@ -366,7 +390,14 @@ def draw_main_header(slide, x_positions, y_pos):
         tf = textbox.text_frame
         tf.vertical_anchor = MSO_ANCHOR.MIDDLE
         p = tf.paragraphs[0]
-        p.alignment = PP_ALIGN.CENTER
+
+        # --- Lógica de alineación de cabecera ---
+        if col_name in ["pais_icon", "aplicaciones", "tecnologia_subyacente"]:
+            p.alignment = PP_ALIGN.LEFT
+        else:
+            p.alignment = PP_ALIGN.CENTER
+        # --- Fin de la lógica de alineación ---
+
         run = p.add_run()
         run.text = HEADER_LABELS[col_name]
         run.font.bold = True
@@ -374,6 +405,24 @@ def draw_main_header(slide, x_positions, y_pos):
 
 
 # --- FUNCIÓN PRINCIPAL DEL MÓDULO (MODIFICADA) ---
+
+
+def _get_sort_key(line_tuple):
+    """Función helper para obtener la clave de ordenamiento País -> Banco"""
+    # line_tuple es ((country, bank, app_name), original_line)
+    country, bank, app_name = line_tuple[0]
+
+    # Determinar bank_sort_name
+    bank_sort_name = "BuyerBank" if "BUYERBANK" in bank.upper() else "BoughtBank"
+
+    country_key = COUNTRY_SORT_ORDER.get(country, 99)  # 99 para desconocidos
+    bank_key = BANK_SORT_ORDER.get(bank_sort_name, 99)
+
+    return (
+        country_key,
+        bank_key,
+        app_name.lower(),
+    )  # Ordena alfabéticamente por nombre como 3er criterio
 
 
 def generate_slide_for_subdomain(
@@ -416,8 +465,13 @@ def generate_slide_for_subdomain(
         "N/A": "na",
     }
 
-    # Iterar sobre las líneas de app (ya no se lee de un archivo)
-    for line_data_tuple, original_line in app_lines_data:
+    # --- NUEVA LÓGICA DE ORDENAMIENTO ---
+    sorted_app_lines_data = sorted(app_lines_data, key=_get_sort_key)
+    current_country = None  # Para rastrear el grupo de país
+    # --- FIN DE LÓGICA DE ORDENAMIENTO ---
+
+    # Iterar sobre las líneas de app (AHORA ORDENADAS)
+    for i, (line_data_tuple, original_line) in enumerate(sorted_app_lines_data):
         try:
             country, bank, app_name = line_data_tuple
             bank_upper = bank.upper()
@@ -476,22 +530,24 @@ def generate_slide_for_subdomain(
             y_pos + (ROW_HEIGHT - ICON_SIZE) / 2
         )  # Y-pos para iconos estándar
 
-        # --- AÑADIR ICONO DE PAÍS (TAMAÑO PERSONALIZADO) ---
-        country_icon_name = COUNTRY_ICONS.get(country)
-        if country_icon_name:
-            icon_path = os.path.join(ICONS_FOLDER, country_icon_name)
-            COUNTRY_ICON_H = Cm(0.51)
-            COUNTRY_ICON_W = Cm(0.71)
-            y_icon_pais = y_pos + (ROW_HEIGHT - COUNTRY_ICON_H) / 2
-            x_icon_pais = x_positions["pais_icon"]
-            add_image(
-                slide,
-                icon_path,
-                x_icon_pais,
-                y_icon_pais,
-                height=COUNTRY_ICON_H,
-                width=COUNTRY_ICON_W,
-            )
+        # --- AÑADIR ICONO DE PAÍS (CONDICIONAL) ---
+        if country != current_country:
+            country_icon_name = COUNTRY_ICONS.get(country)
+            if country_icon_name:
+                icon_path = os.path.join(ICONS_FOLDER, country_icon_name)
+                COUNTRY_ICON_H = Cm(0.51)
+                COUNTRY_ICON_W = Cm(0.71)
+                y_icon_pais = y_pos + (ROW_HEIGHT - COUNTRY_ICON_H) / 2
+                x_icon_pais = x_positions["pais_icon"]
+                add_image(
+                    slide,
+                    icon_path,
+                    x_icon_pais,
+                    y_icon_pais,
+                    height=COUNTRY_ICON_H,
+                    width=COUNTRY_ICON_W,
+                )
+            current_country = country  # Actualizar el país actual
 
         # --- AÑADIR ICONO DE BANCO (TAMAÑO PERSONALIZADO) ---
         if bank_name_eval == "BuyerBank":
@@ -626,18 +682,35 @@ def generate_slide_for_subdomain(
                         slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE
                     )
 
-        # --- Añadir línea separadora ---
+        # --- Añadir línea separadora (CONDICIONAL) ---
         line_y_pos = y_pos + ROW_HEIGHT
-        line_x_start = x_positions["banco_icon"]  # Inicia en el icono de banco
-        line_x_end = line_x_start + Cm(29.38)  # Ancho fijo
+
+        # Lógica de Look-ahead
+        is_last_item = i == len(sorted_app_lines_data) - 1
+        next_country = None
+        if not is_last_item:
+            next_country, _, _ = sorted_app_lines_data[i + 1][
+                0
+            ]  # País del siguiente item
+
+        line_width = Pt(0.5)  # Grosor estándar para todas
+
+        if is_last_item or next_country != current_country:
+            # Fin de grupo de país: Línea ANCHA
+            line_x_start = x_positions["pais_icon"]  # Inicia en el icono de país
+            line_x_end = line_x_start + Cm(30.81)
+        else:
+            # Registro normal: Línea CORTA
+            line_x_start = x_positions["banco_icon"]  # Inicia en el icono de banco
+            line_x_end = line_x_start + Cm(29.38)
 
         shape = slide.shapes.add_connector(
             MSO_CONNECTOR.STRAIGHT, line_x_start, line_y_pos, line_x_end, line_y_pos
         )
         line = shape.line
         line.color.rgb = RGBColor.from_string("959092")
-        line.width = Pt(0.5)
-        shape.shadow.inherit = False  # <-- QUITAR SOMBRA
+        line.width = line_width
+        shape.shadow.inherit = False
         # --- Fin de línea separadora ---
 
         y_pos += ROW_HEIGHT
