@@ -13,3 +13,12 @@ mysql-connector-python
 
 # For string normalization
 unidecode
+
+# --- NUEVAS DEPENDENCIAS ---
+
+# For fuzzy string matching (from reference script)
+thefuzz
+
+# For rendering SVG icons (from reference script)
+svglib
+reportlab
