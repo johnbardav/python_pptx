@@ -1,0 +1,15 @@
+# Python libraries for the Bank App Analysis project
+
+# For reading Excel files
+pandas
+openpyxl
+
+# For creating PowerPoint files
+python-pptx
+
+# For database connection
+sqlalchemy
+mysql-connector-python
+
+# For string normalization
+unidecode
