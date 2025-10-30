@@ -38,6 +38,8 @@ DB_URL = f"mysql+mysqlconnector://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NA
 # Define table names
 TABLE_BUYER_BANK = "aplicaciones_buyer_bank"
 TABLE_BOUGHT_BANK = "aplicaciones_bought_bank"
+# Límite de MySQL (64) menos espacio para sufijos (ej. "_10")
+MAX_COL_LENGTH = 61
 
 
 def wait_for_db(engine, retries=15, wait_time=5):
@@ -58,6 +60,27 @@ def wait_for_db(engine, retries=15, wait_time=5):
 
     print(f"Error: Could not connect to the database after {retries} retries.")
     return False
+
+
+def deduplicate_columns(df):
+    """
+    Renames duplicate columns by appending a suffix (_1, _2, etc.).
+    e.g., ['col', 'col'] becomes ['col', 'col_1']
+    """
+    new_cols = []
+    counts = {}
+    for col in df.columns:
+        counts[col] = counts.get(col, 0)  # Get current count, default to 0
+        if counts[col] > 0:  # If this is a duplicate
+            new_name = f"{col}_{counts[col]}"  # Append the count
+        else:
+            new_name = col  # First time, use original name
+
+        new_cols.append(new_name)
+        counts[col] += 1  # Increment the count for this name
+
+    df.columns = new_cols
+    return df
 
 
 def load_data_to_db():
@@ -85,16 +108,43 @@ def load_data_to_db():
 
     print("Excel files loaded successfully.")
 
-    # 3. Clean column names
-    df_buyer.columns = [
-        col.replace(" ", "_").replace("-", "_") for col in df_buyer.columns
-    ]
-    df_bought.columns = [
-        col.replace(" ", "_").replace("-", "_") for col in df_bought.columns
-    ]
+    # 3. Data Cleaning Pipeline
 
-    print(f"Cleaned Buyer Bank columns: {list(df_buyer.columns)}")
-    print(f"Cleaned Bought Bank columns: {list(df_bought.columns)}")
+    # STEP 3.1: Remove blank columns
+    original_cols_buyer = len(df_buyer.columns)
+    original_cols_bought = len(df_bought.columns)
+    df_buyer = df_buyer.loc[:, df_buyer.columns != ""]
+    df_bought = df_bought.loc[:, df_bought.columns != ""]
+    print(
+        f"Removed {original_cols_buyer - len(df_buyer.columns)} blank columns from Buyer Bank."
+    )
+    print(
+        f"Removed {original_cols_bought - len(df_bought.columns)} blank columns from Bought Bank."
+    )
+
+    # STEP 3.2: Clean and Truncate names (limit for MySQL)
+    def clean_and_truncate(cols):
+        cleaned_cols = []
+        for col in cols:
+            # 1. Clean spaces/hyphens
+            new_col = col.replace(" ", "_").replace("-", "_")
+            # 2. Truncate if necessary (leaving space for suffix)
+            if len(new_col) > MAX_COL_LENGTH:
+                new_col = new_col[:MAX_COL_LENGTH]
+            cleaned_cols.append(new_col)
+        return cleaned_cols
+
+    df_buyer.columns = clean_and_truncate(df_buyer.columns)
+    df_bought.columns = clean_and_truncate(df_bought.columns)
+    print(f"Cleaned and truncated column names to {MAX_COL_LENGTH} chars.")
+
+    # STEP 3.3: De-duplicate column names (post-truncation)
+    df_buyer = deduplicate_columns(df_buyer)
+    df_bought = deduplicate_columns(df_bought)
+    print("Renamed any duplicate columns (post-truncation).")
+
+    print(f"Final Buyer Bank columns: {list(df_buyer.columns)}")
+    print(f"Final Bought Bank columns: {list(df_bought.columns)}")
 
     # 4. Load DataFrames into MySQL tables
     try:
