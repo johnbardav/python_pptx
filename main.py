@@ -13,6 +13,9 @@ try:
     from pptx import Presentation
     from pptx.util import Cm
 
+    # SQLAlchemy
+    from sqlalchemy import text
+
     # Funciones de nuestros 'masters'
     from masters import (
         load_data_from_db,
@@ -35,6 +38,8 @@ except Exception as e:
 # --- Constantes ---
 INPUT_FOLDER = "inputs"
 OUTPUT_FOLDER = "outputs"
+# Directorio para los reportes de pendientes
+PENDING_DIR = os.path.join(OUTPUT_FOLDER, "pendientes")
 # El nombre de la columna de aplicación en la BD (ya limpio)
 APP_COLUMN_NAME_DB = "aplicacion_sistema"
 
@@ -44,12 +49,11 @@ def main_orchestrator():
     Orquesta todo el proceso de generación de slides.
     """
 
+    all_pending_by_file = defaultdict(list)
+
     # --- 1. Load Data from Database ---
     print("\nConnecting to database and loading data...")
-    (
-        df_buyer,
-        df_bought,
-    ) = load_data_from_db()
+    (df_buyer, df_bought, db_engine) = load_data_from_db()
 
     if df_buyer is None or df_bought is None:
         print("Could not load data from database. Aborting presentation build.")
@@ -182,14 +186,14 @@ def main_orchestrator():
                             continue
                         parts = re.findall(r'"(.*?)"', line)
                         if len(parts) == 3:
-                            app_lines_data.append(tuple(parts))
+                            app_lines_data.append((tuple(parts), line))
                         else:
                             print(
                                 f"      ⚠️  Línea ignorada (formato): '{line}' en {txt_filename}"
                             )
 
                 # 4.3. Call the generator to ADD ONE SLIDE
-                generate_slide_for_subdomain(
+                pending_lines_for_this_slide = generate_slide_for_subdomain(
                     prs,
                     subdomain_title,  # Title for the slide
                     app_lines_data,
@@ -197,8 +201,18 @@ def main_orchestrator():
                     choices_buyer,
                     df_bought,
                     choices_bought,
-                    CRITERIA_DB_MAP,  # <-- Pasamos el mapa de configuración
+                    CRITERIA_DB_MAP,
+                    db_engine,
                 )
+
+                # Agrupar pendientes por el nombre del archivo
+                if pending_lines_for_this_slide:
+                    # Usar el path relativo para que sea más fácil de ubicar
+                    relative_path = os.path.relpath(filepath, INPUT_FOLDER)
+                    all_pending_by_file[relative_path].extend(
+                        pending_lines_for_this_slide
+                    )
+
             except Exception as e:
                 print(f"❌ ERROR Fatal procesando el subdominio '{txt_filename}': {e}")
 
@@ -215,6 +229,27 @@ def main_orchestrator():
             )
         except Exception as e:
             print(f"\n  An unexpected error occurred saving '{output_filename}': {e}")
+
+    # --- 5. Write Pending Apps File ---
+    if all_pending_by_file:
+        total_pending_count = sum(len(v) for v in all_pending_by_file.values())
+        print(
+            f"\nGenerando archivo de pendientes... ({total_pending_count} apps no encontradas)"
+        )
+
+        # Asegurarse de que el subdirectorio exista
+        os.makedirs(PENDING_DIR, exist_ok=True)
+
+        output_pending_file = os.path.join(PENDING_DIR, "pendientes.txt")
+        try:
+            with open(output_pending_file, "w", encoding="utf-8") as f:
+                for filename, lines in all_pending_by_file.items():
+                    f.write(f"--- Pendientes de: {filename} ---\n")
+                    for line_text in lines:
+                        f.write(f"{line_text}\n")
+                    f.write("\n")  # Línea en blanco entre grupos de archivos
+        except Exception as e:
+            print(f"❌ ERROR al escribir 'pendientes.txt': {e}")
 
     print("\nProcess finished.")
 

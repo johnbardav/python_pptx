@@ -14,10 +14,11 @@ from pptx import Presentation
 from pptx.util import Pt, Cm
 from pptx.dml.color import RGBColor
 from pptx.enum.text import MSO_ANCHOR, PP_ALIGN
-from pptx.enum.shapes import MSO_SHAPE
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
 from svglib.svglib import svg2rlg
 from reportlab.graphics import renderPM
 import warnings
+from sqlalchemy import text
 
 # --- IMPORTAMOS LA PLANTILLA BASE ---
 from .base_slide import create_base_slide
@@ -30,23 +31,37 @@ OUTPUT_FOLDER = "outputs"
 ICONS_FOLDER = "icons"
 APP_COLUMN_NAME = "aplicacion_sistema"
 
+# Constantes de BD (copiadas de db_loader.py)
+TABLE_BUYER_BANK = "aplicaciones_buyer_bank"
+TABLE_BOUGHT_BANK = "aplicaciones_bought_bank"
+
+# Mapeo de Países a Iconos
+COUNTRY_ICONS = {
+    "Colombia (CO)": "co.png",
+    "Panamá (PA)": "pa.png",
+    "Costa Rica (CR)": "cr.png",
+    "Honduras (HN)": "hn.png",
+    "El Salvador (SV)": "sv.png",
+    "EEUU - Miami (US)": "us.png",
+}
+
 # Parámetros (tomados de 1_generador_madurez_y_reportes.py)
 SIMILARITY_THRESHOLD = 0.90
 TECH_TRUNCATE_LENGTH = 33
 ROW_HEIGHT = Cm(0.62)
 TEXTBOX_HEIGHT = Cm(0.48)
-APP_TEXTBOX_WIDTH = Cm(4.27)
-TECH_TEXTBOX_WIDTH = Cm(4.27)
-ICON_SIZE = Cm(0.46)
+ICON_SIZE = Cm(0.46)  # Tamaño estándar para iconos de criterios
 FONT_SIZE = 8
 
 INDICATOR_ICONS = {"si": "si.svg", "no": "no.svg", "parcial": "na.svg", "na": "na.svg"}
 HEADER_LABELS = {
+    "pais_icon": "",
+    "banco_icon": "",
     "aplicaciones": "Aplicaciones",
-    "sas": "SAS",
-    "cloud": "Cloud",
-    "cots": "COTS",
-    "regional": "Regional",
+    "sas": "",
+    "cloud": "",
+    "cots": "",
+    "regional": "",
     "tecnologia_subyacente": "Tecnología subyacente",
     "obsolescencia": "Obsolescencia",
     "escalabilidad": "Escalabilidad",
@@ -57,12 +72,14 @@ HEADER_LABELS = {
 }
 # Asegurarnos de usar los nombres de columna de la BD (con '_')
 COLUMN_ORDER = [
+    "pais_icon",
+    "banco_icon",
     "aplicaciones",
     "sas",
     "cloud",
     "cots",
     "regional",
-    "tecnologia_subyacente",
+    "tecnologia_subyacente",  # <-- Movido
     "obsolescencia",
     "escalabilidad",
     "acople",
@@ -71,18 +88,28 @@ COLUMN_ORDER = [
     "seguridad",
 ]
 COLUMN_WIDTHS = {
-    "aplicaciones": APP_TEXTBOX_WIDTH,
+    "pais_icon": Cm(0.71),
+    "banco_icon": Cm(0.55),
+    "aplicaciones": Cm(6.70),
     "sas": Cm(0.6),
     "cloud": Cm(0.6),
     "cots": Cm(0.6),
     "regional": Cm(0.6),
-    "tecnologia_subyacente": TECH_TEXTBOX_WIDTH,
+    "tecnologia_subyacente": Cm(6.70),  # <-- Ancho igualado
     "obsolescencia": Cm(2.0),
     "escalabilidad": Cm(2.0),
     "acople": Cm(2.0),
     "estabilidad": Cm(2.0),
     "extensibilidad": Cm(2.0),
     "seguridad": Cm(2.0),
+}
+
+# Gaps entre las primeras columnas
+GAPS = {
+    "pais_icon": Cm(0.71),
+    "banco_icon": Cm(0.42),
+    "aplicaciones": Cm(0.2),
+    "regional": Cm(0.2),  # Gap después de regional, antes de tech
 }
 
 
@@ -249,27 +276,86 @@ def find_best_match(app_name, choices_dict):
 # --- FUNCIONES DE POWERPOINT (Adaptadas de la referencia) ---
 
 
-def add_image(slide, img_path, x, y, height=ICON_SIZE):
-    """(Función de 1_generador_madurez_y_reportes.py)"""
+def add_image(slide, img_path, x, y, height=ICON_SIZE, width=None):
+    """
+    (Función de 1_generador_madurez_y_reportes.py)
+    Modificada para aceptar un ancho (width) opcional y asegurar alta calidad para SVGs.
+    """
     if not os.path.exists(img_path):
         return None
+
+    if width is None:
+        width = height  # Si no se da ancho, asume un icono cuadrado
+
     try:
-        width = height
         if img_path.lower().endswith(".svg"):
             drawing = svg2rlg(img_path)
             if not drawing:
                 return None
             png_buffer = BytesIO()
-            renderPM.drawToFile(drawing, png_buffer, fmt="PNG", dpi=300)
+            # Asegurar alta DPI para la conversión SVG a PNG
+            renderPM.drawToFile(drawing, png_buffer, fmt="PNG", dpi=600)
             png_buffer.seek(0)
             return slide.shapes.add_picture(
                 png_buffer, x, y, width=width, height=height
             )
         elif img_path.lower().endswith((".png", ".jpg", ".jpeg")):
+            # Para PNG/JPG existentes, los insertamos directamente.
+            # La calidad de estos depende del archivo original.
             return slide.shapes.add_picture(img_path, x, y, width=width, height=height)
     except Exception:
         pass
     return None
+
+
+def calculate_positions(start_x):
+    """
+    Calcula las posiciones X de inicio para cada columna.
+    El lado izquierdo se calcula L-R y el lado derecho (criterios) R-L.
+    """
+    positions = {}
+
+    # --- Lado Izquierdo (L-R) ---
+    cols_left_to_right = [
+        "pais_icon",
+        "banco_icon",
+        "aplicaciones",
+        "sas",
+        "cloud",
+        "cots",
+        "regional",
+        "tecnologia_subyacente",
+    ]
+
+    current_x = start_x
+    for col_name in cols_left_to_right:
+        positions[col_name] = current_x
+        current_x += COLUMN_WIDTHS[col_name]
+        # Añadir Gaps
+        if col_name in GAPS:
+            current_x += GAPS[col_name]
+
+    # --- Lado Derecho (R-L) ---
+    # El área de contenido total es Cm(30.8) de ancho, comenzando en Cm(1.54)
+    END_X = Cm(1.54) + Cm(30.8)
+
+    cols_right_to_left = [
+        "seguridad",
+        "extensibilidad",
+        "estabilidad",
+        "acople",
+        "escalabilidad",
+        "obsolescencia",
+    ]
+
+    current_x = END_X
+    for col_name in cols_right_to_left:
+        # Resta el ancho de la columna y luego asigna la posición
+        current_x -= COLUMN_WIDTHS[col_name]
+        positions[col_name] = current_x
+        # (Aquí se podrían agregar gaps entre criterios si fuera necesario)
+
+    return positions
 
 
 def draw_main_header(slide, x_positions, y_pos):
@@ -298,7 +384,8 @@ def generate_slide_for_subdomain(
     choices_buyer,
     df_bought,
     choices_bought,
-    criteria_map,  # <-- NUEVO PARÁMETRO
+    criteria_map,
+    db_engine,
 ):
     """
     Crea UN slide para un subdominio específico, usando la plantilla base.
@@ -309,16 +396,14 @@ def generate_slide_for_subdomain(
     # 1. CREAR EL SLIDE USANDO LA PLANTILLA BASE
     slide = create_base_slide(prs, subdomain_title, "")
 
+    pending_lines = []
+
     # 2. DEFINIR COORDENADAS DE INICIO PARA EL CONTENIDO
     START_X = Cm(1.54)
     START_Y = Cm(5.22)  # Top del área de contenido
 
     # 3. DIBUJAR LA TABLA
-    x_positions = {}
-    current_x = START_X
-    for col_name in COLUMN_ORDER:
-        x_positions[col_name] = current_x
-        current_x += COLUMN_WIDTHS[col_name]
+    x_positions = calculate_positions(START_X)
 
     draw_main_header(slide, x_positions, START_Y)
 
@@ -332,53 +417,134 @@ def generate_slide_for_subdomain(
     }
 
     # Iterar sobre las líneas de app (ya no se lee de un archivo)
-    for line_data in app_lines_data:
+    for line_data_tuple, original_line in app_lines_data:
         try:
-            country, bank, app_name = line_data
+            country, bank, app_name = line_data_tuple
             bank_upper = bank.upper()
 
             if "BUYERBANK" in bank_upper:
                 target_df, target_choices = df_buyer, choices_buyer
                 bank_name_eval = "BuyerBank"
+                table_to_update = TABLE_BUYER_BANK
             elif "BOUGHTBANK" in bank_upper:
                 target_df, target_choices = df_bought, choices_bought
                 bank_name_eval = "BoughtBank"
+                table_to_update = TABLE_BOUGHT_BANK
             else:
                 print(
-                    f"      ⚠️  Banco no reconocido (use 'BuyerBank' o 'BoughtBank'): '{line_data}'"
+                    f"      ⚠️  Banco no reconocido (use 'BuyerBank' o 'BoughtBank'): '{original_line}'"
                 )
                 continue
         except Exception as e:
-            print(f"      ❌ Error procesando línea '{line_data}': {e}")
+            print(f"      ❌ Error procesando línea '{original_line}': {e}")
             continue
 
         excel_match_name = find_best_match(app_name, target_choices)
-        row_df = (
-            target_df[target_df[APP_COLUMN_NAME] == excel_match_name]
-            if excel_match_name
-            else pd.DataFrame()
-        )
-        row = row_df.iloc[0] if not row_df.empty else None
+        row = None
+
+        if excel_match_name:
+            # 1. ACTUALIZAR BASE DE DATOS
+            try:
+                update_stmt = text(
+                    f"""
+                    UPDATE {table_to_update}
+                    SET mostrar_en_arquitectura_target = 'Si'
+                    WHERE {APP_COLUMN_NAME} = :app_name
+                    """
+                )
+                with db_engine.connect() as conn:
+                    conn.execute(update_stmt, {"app_name": excel_match_name})
+                    conn.commit()
+
+            except Exception as e:
+                print(f"      ⚠️  ERROR al actualizar BD para '{app_name}': {e}")
+
+            # 2. OBTENER FILA PARA SLIDE
+            row_df = (
+                target_df[target_df[APP_COLUMN_NAME] == excel_match_name]
+                if excel_match_name
+                else pd.DataFrame()
+            )
+            row = row_df.iloc[0] if not row_df.empty else None
+
+        else:
+            # 2. APP NO ENCONTRADA, AGREGAR A PENDIENTES
+            pending_lines.append(original_line)
 
         y_text_pos = y_pos + (ROW_HEIGHT - TEXTBOX_HEIGHT) / 2
-        y_icon_pos = y_pos + (ROW_HEIGHT - ICON_SIZE) / 2
+        y_icon_pos_std = (
+            y_pos + (ROW_HEIGHT - ICON_SIZE) / 2
+        )  # Y-pos para iconos estándar
 
-        x_app, w_app = x_positions["aplicaciones"], COLUMN_WIDTHS["aplicaciones"]
-        textbox = slide.shapes.add_textbox(x_app, y_text_pos, w_app, TEXTBOX_HEIGHT)
-        p = textbox.text_frame.paragraphs[0]
-        p.text = app_name
+        # --- AÑADIR ICONO DE PAÍS (TAMAÑO PERSONALIZADO) ---
+        country_icon_name = COUNTRY_ICONS.get(country)
+        if country_icon_name:
+            icon_path = os.path.join(ICONS_FOLDER, country_icon_name)
+            COUNTRY_ICON_H = Cm(0.51)
+            COUNTRY_ICON_W = Cm(0.71)
+            y_icon_pais = y_pos + (ROW_HEIGHT - COUNTRY_ICON_H) / 2
+            x_icon_pais = x_positions["pais_icon"]
+            add_image(
+                slide,
+                icon_path,
+                x_icon_pais,
+                y_icon_pais,
+                height=COUNTRY_ICON_H,
+                width=COUNTRY_ICON_W,
+            )
+
+        # --- AÑADIR ICONO DE BANCO (TAMAÑO PERSONALIZADO) ---
+        if bank_name_eval == "BuyerBank":
+            icon_path = os.path.join(ICONS_FOLDER, "dav.png")
+        else:  # bank_name_eval == "BoughtBank"
+            icon_path = os.path.join(ICONS_FOLDER, "sco.png")
+
+        BANK_ICON_H = Cm(0.49)
+        BANK_ICON_W = Cm(0.55)
+        y_icon_banco = y_pos + (ROW_HEIGHT - BANK_ICON_H) / 2
+        x_icon_banco = x_positions["banco_icon"] + (
+            (COLUMN_WIDTHS["banco_icon"] - BANK_ICON_W) / 2
+        )
+        add_image(
+            slide,
+            icon_path,
+            x_icon_banco,
+            y_icon_banco,
+            height=BANK_ICON_H,
+            width=BANK_ICON_W,
+        )
+
+        # --- AÑADIR SHAPE DE APLICACIÓN ---
+        x_app = x_positions["aplicaciones"]
+        w_app = COLUMN_WIDTHS["aplicaciones"]
+        y_app_shape = y_pos + (ROW_HEIGHT - TEXTBOX_HEIGHT) / 2
+
+        shape = slide.shapes.add_shape(
+            MSO_SHAPE.ROUNDED_RECTANGLE, x_app, y_app_shape, w_app, TEXTBOX_HEIGHT
+        )
+        shape.fill.solid()
+        shape.fill.fore_color.rgb = RGBColor.from_string("E3151E")
+        shape.line.fill.background()  # Sin borde
+        shape.shadow.inherit = False
+
+        tf = shape.text_frame
+        tf.text = app_name
+        tf.vertical_anchor = MSO_ANCHOR.MIDDLE
+        p = tf.paragraphs[0]
+        p.alignment = PP_ALIGN.LEFT
+        p.font.color.rgb = RGBColor(255, 255, 255)
         p.font.size = Pt(FONT_SIZE)
 
         if row is not None:
             # Evaluar criterios usando el MAPA
             resultados_evaluacion = evaluar_criterios(row, bank_name_eval, criteria_map)
 
-            # Dibujar Iconos (SAS, COTS, CLOUD, REGIONAL)
+            # --- Iconos (SAS, COTS, CLOUD, REGIONAL) ---
             val_sas = get_value_from_row(row, criteria_map.get("icon_sas"))
             if val_sas and normalize_string(val_sas) == "si":
                 icon_path = os.path.join(ICONS_FOLDER, "sass.png")
                 x_icon = x_positions["sas"] + (COLUMN_WIDTHS["sas"] - ICON_SIZE) / 2
-                add_image(slide, icon_path, x_icon, y_icon_pos)
+                add_image(slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE)
 
             val_custom = get_value_from_row(row, criteria_map.get("icon_cots"))
             if val_custom:
@@ -388,13 +554,15 @@ def generate_slide_for_subdomain(
                     x_icon = (
                         x_positions["cots"] + (COLUMN_WIDTHS["cots"] - ICON_SIZE) / 2
                     )
-                    add_image(slide, icon_path, x_icon, y_icon_pos)
+                    add_image(
+                        slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE
+                    )
 
             val_nube = get_value_from_row(row, criteria_map.get("icon_cloud"))
             if val_nube and normalize_string(val_nube) == "nube":
                 icon_path = os.path.join(ICONS_FOLDER, "cloud.svg")
                 x_icon = x_positions["cloud"] + (COLUMN_WIDTHS["cloud"] - ICON_SIZE) / 2
-                add_image(slide, icon_path, x_icon, y_icon_pos)
+                add_image(slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE)
 
             val_bns_raw = get_value_from_row(row, criteria_map.get("icon_regional"))
             if val_bns_raw:
@@ -405,11 +573,16 @@ def generate_slide_for_subdomain(
                         x_positions["regional"]
                         + (COLUMN_WIDTHS["regional"] - ICON_SIZE) / 2
                     )
-                    add_image(slide, icon_path, x_icon, y_icon_pos)
+                    add_image(
+                        slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE
+                    )
 
-            # Escribir Tecnología
+            # --- Tecnología ---
             tech_text = get_value_from_row(row, criteria_map.get("tecnologia"))
             if tech_text:
+                # Reemplazar saltos de línea por espacios
+                tech_text = " ".join(tech_text.split())
+
                 if len(tech_text) > TECH_TRUNCATE_LENGTH:
                     tech_text = tech_text[:TECH_TRUNCATE_LENGTH] + "..."
                 textbox_tec = slide.shapes.add_textbox(
@@ -430,20 +603,16 @@ def generate_slide_for_subdomain(
                 p_tec.text = tech_text
                 p_tec.font.size = Pt(FONT_SIZE)
 
-            # Dibujar Iconos de Evaluación
+            # --- Iconos de Evaluación (Criterios) ---
             indicator_cols = [
-                c
-                for c in COLUMN_ORDER
-                if c
-                not in [
-                    "aplicaciones",
-                    "sas",
-                    "cloud",
-                    "cots",
-                    "regional",
-                    "tecnologia_subyacente",
-                ]
+                "obsolescencia",
+                "escalabilidad",
+                "acople",
+                "estabilidad",
+                "extensibilidad",
+                "seguridad",
             ]
+
             for col_name in indicator_cols:
                 resultado_evaluado = resultados_evaluacion.get(col_name)
                 icono_key = map_resultado_a_icono.get(resultado_evaluado)
@@ -453,6 +622,24 @@ def generate_slide_for_subdomain(
                         x_positions[col_name]
                         + (COLUMN_WIDTHS[col_name] - ICON_SIZE) / 2
                     )
-                    add_image(slide, icon_path, x_icon, y_icon_pos)
+                    add_image(
+                        slide, icon_path, x_icon, y_icon_pos_std, height=ICON_SIZE
+                    )
+
+        # --- Añadir línea separadora ---
+        line_y_pos = y_pos + ROW_HEIGHT
+        line_x_start = x_positions["banco_icon"]  # Inicia en el icono de banco
+        line_x_end = line_x_start + Cm(29.38)  # Ancho fijo
+
+        shape = slide.shapes.add_connector(
+            MSO_CONNECTOR.STRAIGHT, line_x_start, line_y_pos, line_x_end, line_y_pos
+        )
+        line = shape.line
+        line.color.rgb = RGBColor.from_string("959092")
+        line.width = Pt(0.5)
+        shape.shadow.inherit = False  # <-- QUITAR SOMBRA
+        # --- Fin de línea separadora ---
 
         y_pos += ROW_HEIGHT
+
+    return pending_lines

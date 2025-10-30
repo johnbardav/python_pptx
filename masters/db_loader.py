@@ -36,8 +36,8 @@ def load_data_from_db():
     into pandas DataFrames.
 
     Returns:
-        A tuple containing: (df_buyer, df_bought)
-        Returns (None, None) if the connection fails.
+        A tuple containing: (df_buyer, df_bought, engine)
+        Returns (None, None, None) if the connection fails.
     """
     try:
         engine = create_engine(DB_URL)
@@ -48,10 +48,10 @@ def load_data_from_db():
         print(f"\nError: Could not connect to the database at {DB_HOST}:{DB_PORT}.")
         print("Please ensure the Docker container is running ('docker-compose up -d').")
         print(f"Details: {e}")
-        return None, None
+        return None, None, None
     except Exception as e:
         print(f"\nAn unexpected error occurred: {e}")
-        return None, None
+        return None, None, None
 
     try:
         print(f"Reading table '{TABLE_BUYER_BANK}'...")
@@ -60,8 +60,8 @@ def load_data_from_db():
         print(f"Reading table '{TABLE_BOUGHT_BANK}'...")
         df_bought = pd.read_sql(f"SELECT * FROM {TABLE_BOUGHT_BANK}", engine)
 
-        return df_buyer, df_bought
+        return df_buyer, df_bought, engine
 
     except Exception as e:
         print(f"Error reading data from tables: {e}")
-        return None, None
+        return None, None, None
