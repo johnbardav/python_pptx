@@ -1,4 +1,4 @@
-"Colombia (CO)",		"BuyerBank",	"Open pages"
+"Colombia (CO)",		"BuyerBank",	"OPEN PAGES - APLICATIVO AUDITORÍA"
 "Colombia (CO)",		"BuyerBank",	"Cuentas de compensación"
 "Colombia (CO)",		"BoughtBank",	"D3 (D3)"
 "Colombia (CO)",		"BoughtBank",	"OFAC"

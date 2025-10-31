@@ -1,3 +1,6 @@
+"Colombia (CO)",		"BuyerBank",	"ADMINISTRACIÓN CONVENIOS DE RECAUDO"
+"Colombia (CO)",		"BuyerBank",	"COEASY-COEASY WEB"
+"Colombia (CO)",		"BuyerBank",	"TASAS DIFERENCIALES"
 "Panamá (PA)",			"BuyerBank",	"IBS Core (Datapro)"
 "Panamá (PA)",			"BoughtBank",	"Scotiapro (AS400)"
 "Panamá (PA)",			"BoughtBank",	"Concept"
@@ -15,6 +18,3 @@
 "Costa Rica (CR)",		"BoughtBank",	"Bacosi"
 "Costa Rica (CR)",		"BoughtBank",	"Banca 2000"
 "El Salvador (SV)",		"BuyerBank",	"IBS / eIBS Core Banking System"
-"Honduras (HN)",		"BuyerBank",	"Calce de plazo"
-"Honduras (HN)",		"BuyerBank",	"Tasa de Seguridad"
-"Honduras (HN)",		"BuyerBank",	"Gestor de fideicomisos"

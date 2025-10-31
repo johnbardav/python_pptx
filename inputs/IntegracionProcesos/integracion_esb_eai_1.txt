@@ -1,5 +1,5 @@
 "Colombia (CO)",		"BuyerBank",	"IBM IIB"
-"Colombia (CO)",		"BuyerBank",	"Datapower"
+"Colombia (CO)",		"BuyerBank",	"DataPower Gateway"
 "Colombia (CO)",		"BoughtBank",	"IWS"
 "Colombia (CO)",		"BoughtBank",	"Datapower"
 "Colombia (CO)",		"BoughtBank",	"App Connect Enterprise"

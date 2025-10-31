@@ -1,5 +1,5 @@
 "Colombia (CO)",	"BuyerBank",	"CIM"
-"Colombia (CO)",	"BuyerBank",	"Elevate"
+"Colombia (CO)",	"BuyerBank",	"ELEVATE (TELLER, FIRMAS, INVENTARIO)"
 "Colombia (CO)",	"BoughtBank",	"eTeller (BNS)"
 "Colombia (CO)",	"BoughtBank",	"Geobis (Geobis)"
 "Colombia (CO)",	"BoughtBank",	"Onebank"

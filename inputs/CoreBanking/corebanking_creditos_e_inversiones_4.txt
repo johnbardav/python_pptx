@@ -1,3 +1,4 @@
+"Costa Rica (CR)",		"BoughtBank",	"ND Global Limit (FICO) (BNS)"
 "Costa Rica (CR)",		"BoughtBank",	"Aptividad Onboarding (BiQina, TTY)"
 "El Salvador (SV)",		"BuyerBank",	"IBS / eIBS Core Banking System"
 "El Salvador (SV)",		"BuyerBank",	"Calidad Total"

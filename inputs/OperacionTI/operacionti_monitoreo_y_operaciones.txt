@@ -1,4 +1,5 @@
 "Colombia (CO)",		"BuyerBank",	"Dynatrace"
+"Colombia (CO)",		"BuyerBank",	"TANIUM"
 "Colombia (CO)",		"BuyerBank",	"NEW RELIC"
 "Colombia (CO)",		"BuyerBank",	"SERVICE NOW (ADA)"
 "Colombia (CO)",		"BuyerBank",	"VictorOps"

@@ -12,3 +12,5 @@
 "EEUU - Miami (US)",	"BuyerBank",	"Fedline Advantage a"
 "EEUU - Miami (US)",	"BuyerBank",	"Fedlink (Ocean Systems)"
 "EEUU - Miami (US)",	"BuyerBank",	"iChecks / iStmts / iCold"
+"Colombia (CO)",		"BuyerBank",	"Sis. Establecimiento e Intercambio (SEI)"
+"Colombia (CO)",		"BuyerBank",	"MOTOR DE PAGOS (HOST 2 HOST)"

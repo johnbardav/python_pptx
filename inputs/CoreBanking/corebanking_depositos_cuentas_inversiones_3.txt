@@ -1,3 +1,6 @@
+"Honduras (HN)",		"BuyerBank",	"Calce de plazo"
+"Honduras (HN)",		"BuyerBank",	"Tasa de Seguridad"
+"Honduras (HN)",		"BuyerBank",	"Gestor de fideicomisos"
 "Honduras (HN)",		"BuyerBank",	"Módulo de firmas"
 "Honduras (HN)",		"BuyerBank",	"Módulo de Inversiones"
 "Honduras (HN)",		"BuyerBank",	"SEUS"

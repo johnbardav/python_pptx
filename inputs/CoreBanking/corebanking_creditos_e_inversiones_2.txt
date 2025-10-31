@@ -1,3 +1,4 @@
+"Colombia (CO)",		"BoughtBank",	"Codensa Integra – admin créditos"
 "Panamá (PA)",			"BuyerBank",	"IBS Core (Datapro)""
 "Panamá (PA)",			"BoughtBank",	"Scotiapro (AS400)"
 "Panamá (PA)",			"BoughtBank",	"Panco Luc"
@@ -17,4 +18,3 @@
 "Costa Rica (CR)",		"BuyerBank",	"CEN Garantías"
 "Costa Rica (CR)",		"BuyerBank",	"Gestiones crédito activa"
 "Costa Rica (CR)",		"BuyerBank",	"Ultimus 7 Créditos Personales"
-"Costa Rica (CR)",		"BuyerBank",	"WAS"

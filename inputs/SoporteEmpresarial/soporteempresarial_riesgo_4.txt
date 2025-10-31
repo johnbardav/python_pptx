@@ -6,3 +6,4 @@
 "Honduras (HN)",		"BuyerBank",	"GRCA"
 "Honduras (HN)",		"BuyerBank",	"SAS AML"
 "EEUU - Miami (US)",	"BuyerBank",	"Equifax"
+"Colombia (CO)",		"BuyerBank",	"IRIS"

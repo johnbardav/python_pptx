@@ -1,5 +1,6 @@
 "Colombia (CO)",		"BuyerBank",	"Modelos Fraude"
 "Colombia (CO)",		"BuyerBank",	"SIGAR SARLAFT"
+"Colombia (CO)",		"BuyerBank",	"TRANSMIT"
 "Colombia (CO)",		"BoughtBank",	"My Compliance Officer (MCO)"
 "Colombia (CO)",		"BoughtBank",	"Navex(Navex)"
 "Colombia (CO)",		"BoughtBank",	"FCCM (Oracle)"

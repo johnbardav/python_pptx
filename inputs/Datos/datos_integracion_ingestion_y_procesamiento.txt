@@ -1,6 +1,8 @@
 "Colombia (CO)",		"BuyerBank",	"ODI CLIENTE 360"
 "Colombia (CO)",		"BuyerBank",	"ODI12 (BODEGA DE DATOS)"
 "Colombia (CO)",		"BuyerBank",	"Fivetran"
+"Colombia (CO)",		"BuyerBank",	"Dataproc"
+"Colombia (CO)",		"BuyerBank",	"Dataflow"
 "Colombia (CO)",		"BoughtBank",	"Spark"
 "Colombia (CO)",		"BoughtBank",	"DTSX"
 "Colombia (CO)",		"BoughtBank",	"Informatica PowerCenter ETL / Power Center Designer"
@@ -12,3 +14,4 @@
 "Costa Rica (CR)",		"BuyerBank",	"Riesgo AML"
 "CAM (PA-CR-SV-HN)",	"BoughtBank",	"Reporte Manual Excepsiones LAC BOX"
 "CAM + CO",		        "BoughtBank",	"Spark"
+"Colombia (CO)",		"BoughtBank",	"Event Exchange / Kafka"

@@ -1,3 +1,5 @@
+"Panamá (PA)",			"BoughtBank",	"Genesys"
+"Panamá (PA)",			"BoughtBank",	"Polaris (BNS)"
 "Costa Rica (CR)",		"BuyerBank",	"IUCollect"
 "Costa Rica (CR)",		"BuyerBank",	"Sunsystem"
 "Costa Rica (CR)",		"BoughtBank",	"Web nectar"

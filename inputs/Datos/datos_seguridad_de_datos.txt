@@ -1,0 +1,5 @@
+"Colombia (CO)",		"BuyerBank",	"DataLake GCP"
+"Colombia (CO)",		"BuyerBank",	"GCP DLP"
+"Colombia (CO)",		"BuyerBank",	"GCP KMS"
+"Colombia (CO)",		"BuyerBank",	"GCP IAM"
+"Colombia (CO)",		"BuyerBank",	"GCP Secret Manager"

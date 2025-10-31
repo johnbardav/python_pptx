@@ -2,6 +2,7 @@
 "Colombia (CO)",		"BuyerBank",	"CONFLUENCE"
 "Colombia (CO)",		"BuyerBank",	"INTERALINKS"
 "Colombia (CO)",		"BuyerBank",	"JIRA"
+"Colombia (CO)",		"BuyerBank",	"Atlassian Suite - Continuous Integration and Delivery Tools - Confluence, Bitbucket"
 "Colombia (CO)",        "BoughtBank",   "Archimate"
 "Colombia (CO)",        "BoughtBank",   "Canvas /Design System"
 "Colombia (CO)",        "BoughtBank",   "DrawIO"

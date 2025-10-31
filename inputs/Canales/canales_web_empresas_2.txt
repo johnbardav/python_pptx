@@ -6,5 +6,6 @@
 "El Salvador (SV)",		"BuyerBank",	"Portal Davivienda Empresarial Multilatina"
 "Honduras (HN)",		"BuyerBank",	"Banca en línea empresas (Cyberbank)"
 "Honduras (HN)",		"BuyerBank",	"PER"
+"Honduras (HN)",		"BuyerBank",	"Portal Regional"
 "EEUU - Miami (US)",	"BuyerBank",	"PER"
 "EEUU - Miami (US)",	"BuyerBank",	"Banca en línea empresas (Cyberbank)"

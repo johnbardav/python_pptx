@@ -2,6 +2,7 @@
 "Colombia (CO)",		"BuyerBank",	"RMAN ORACLE"
 "Colombia (CO)",		"BuyerBank",	"DATALAKE 2.0:- INDICADORES DE LIQUIDEZ F458"
 "Colombia (CO)",		"BuyerBank",	"SNOWFLAKE"
+"Colombia (CO)",		"BuyerBank",	"BigQuery"
 "Colombia (CO)",		"BuyerBank",	"SIIFI (BODEGA)"
 "Colombia (CO)",		"BuyerBank",	"DataLake GCP"
 "Colombia (CO)",		"BoughtBank",	"Consolidated Transaction Repository (CTR)"

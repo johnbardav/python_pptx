@@ -1,3 +1,5 @@
 "Colombia (CO)",		"BuyerBank",	"Embarcadero ERStudio Data architect"
 "Colombia (CO)",		"BoughtBank",	"Governance Console"
 "Colombia (CO)",		"BoughtBank",	"Universal Catalogue - Collibra"
+"Colombia (CO)",		"BuyerBank",	"Vertex"
+"Colombia (CO)",		"BuyerBank",	"Dataplex"

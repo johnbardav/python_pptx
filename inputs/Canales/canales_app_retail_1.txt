@@ -1,7 +1,7 @@
 "Colombia (CO)",	"BuyerBank",	"Vinculación digital de comercios"
 "Colombia (CO)",	"BuyerBank",	"App Davivienda"
 "Colombia (CO)",	"BuyerBank",	"Eleva"
-"Colombia (CO)",	"BuyerBank",	"SuperApp Retail"
+"Colombia (CO)",	"BuyerBank",	"SuperApp"
 "Colombia (CO)",	"BuyerBank",	"PFM"
 "Colombia (CO)",	"BuyerBank",	"Módulo transversal"
 "Colombia (CO)",	"BoughtBank",	"Jump (Incluida en Venta)"

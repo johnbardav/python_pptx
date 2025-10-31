@@ -7,7 +7,7 @@
 "Colombia (CO)",		"BuyerBank",	"Micro convenios de pago por ventanilla"
 "Colombia (CO)",		"BuyerBank",	"Órdenes de pago"
 "Colombia (CO)",		"BuyerBank",	"Orion"
-"Colombia (CO)",		"BuyerBank",	"EPAYCO"
+"Colombia (CO)",		"BuyerBank",	"EPAYCO API DAVIVIENDA"
 "Colombia (CO)",		"BuyerBank",	"PAYMENTEZ"
 "Colombia (CO)",		"BuyerBank",	"PSE"
 "Colombia (CO)",		"BuyerBank",	"POSTILION OFFICE"

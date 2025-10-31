@@ -1,5 +1,5 @@
 "Colombia (CO)",		"BuyerBank",	"X-STREAM"
-"Colombia (CO)",		"BuyerBank",	"MEC (BVC)"
+"Colombia (CO)",		"BuyerBank",	"MEC"
 "Colombia (CO)",		"BuyerBank",	"Swift"
 "Colombia (CO)",		"BuyerBank",	"SET FX"
 "Colombia (CO)",		"BuyerBank",	"Plantilla asistida"

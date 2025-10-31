@@ -10,7 +10,7 @@
 "Costa Rica (CR)",		"BoughtBank",	"Limite Global"
 "Costa Rica (CR)",		"BoughtBank",	"Fusion (BCP) (BNS)"
 "Costa Rica (CR)",		"BoughtBank",	"PLDC (BNS)"
-"Costa Rica (CR)",		"BoughtBank",	"EFMS (Compulynx)"
+"Costa Rica (CR)",		"BoughtBank",	"EFMS - Registro de fraudes electrónicos"
 "Costa Rica (CR)",		"BoughtBank",	"Time to Yes - Apptividad"
 "Costa Rica (CR)",		"BoughtBank",	"Sentinel"
 "Costa Rica (CR)",		"BoughtBank",	"Everbridge (BNS)"

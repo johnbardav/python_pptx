@@ -1,3 +1,4 @@
+"Costa Rica (CR)",		"BuyerBank",	"WAS"
 "Costa Rica (CR)",		"BuyerBank",	"CEN Garantías"
 "Costa Rica (CR)",		"BuyerBank",	"CEN Préstamos"
 "Costa Rica (CR)",		"BuyerBank",	"CEN Market / Checker"
@@ -17,4 +18,3 @@
 "Costa Rica (CR)",		"BoughtBank",	"Blaze Advisor (FICO) (BNS)"
 "Costa Rica (CR)",		"BoughtBank",	"200T Tool (FICO) (BNS)"
 "Costa Rica (CR)",		"BoughtBank",	"eIAP"
-"Costa Rica (CR)",		"BoughtBank",	"ND Global Limit (FICO) (BNS)"

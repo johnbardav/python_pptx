@@ -7,3 +7,4 @@
 "EEUU - Miami (US)",	"BuyerBank",	"SWIFT (StoneX)"
 "EEUU - Miami (US)",	"BuyerBank",	"Swift Services Bureau"
 "EEUU - Miami (US)",	"BuyerBank",	"IBS / eIBS Core Banking System"
+"Colombia (CO)",		"BuyerBank",	"BANCOLDEX"
