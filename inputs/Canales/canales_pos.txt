@@ -1,0 +1,5 @@
+"Colombia (CO)",		"BuyerBank",	"WINPOS"
+"Panamá (PA)",			"BoughtBank",	"Posware"
+"Panamá (PA)",			"BoughtBank",	"PosVirtual"
+"Costa Rica (CR)",		"BoughtBank",	"Posware"
+"Costa Rica (CR)",		"BoughtBank",	"PosVirtual"

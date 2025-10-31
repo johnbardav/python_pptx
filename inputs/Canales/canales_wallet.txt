@@ -1,0 +1,6 @@
+"Colombia (CO)",	"BuyerBank",	"Daviplata"
+"Colombia (CO)",	"BoughtBank",	"HTC (HTC)"
+"Panamá (PA)",		"BuyerBank",	"HST"
+"Panamá (PA)",		"BoughtBank",	"HST"
+"Costa Rica (CR)",	"BoughtBank",	"HST"
+"El Salvador (SV)",	"BuyerBank",	"Daviplata"

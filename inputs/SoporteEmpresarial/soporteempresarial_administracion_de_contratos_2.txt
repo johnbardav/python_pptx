@@ -1,0 +1,8 @@
+"Costa Rica (CR)",		"BoughtBank",	"Build / PRS/ Workflow (BNS)"
+"Costa Rica (CR)",		"BoughtBank",	"Fieldglass (SAP)"
+"Costa Rica (CR)",		"BoughtBank",	"Clarity (BNS)"
+"Costa Rica (CR)",		"BoughtBank",	"Coupa_TPRM"
+"Costa Rica (CR)",		"BoughtBank",	"Coupa (BNS)"
+"Costa Rica (CR)",		"BoughtBank",	"Scotiabank Global Intra Services Tool (GIST)"
+"El Salvador (SV)",		"BuyerBank",	"Ariba"
+"Honduras (HN)",		"BuyerBank",	"Facturación"

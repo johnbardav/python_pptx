@@ -1,0 +1,3 @@
+"El Salvador (SV)",		"BuyerBank",	"Tecla de la Casita Roja"
+"Honduras (HN)",		"BuyerBank",	"APP Personas"
+"EEUU - Miami (US)",	"BuyerBank",	"APP Móvil"

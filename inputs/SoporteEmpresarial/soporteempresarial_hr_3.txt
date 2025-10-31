@@ -1,0 +1,7 @@
+"El Salvador (SV)",		"BuyerBank",	"Sitio Rojo TU"
+"El Salvador (SV)",		"BuyerBank",	"Eureka"
+"El Salvador (SV)",		"BuyerBank",	"Pipol"
+"Honduras (HN)",		"BuyerBank",	"Evolution"
+"Honduras (HN)",		"BuyerBank",	"Intranet"
+"EEUU - Miami (US)",	"BuyerBank",	"Trinet"
+"EEUU - Miami (US)",	"BuyerBank",	"Xplora"

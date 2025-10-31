@@ -1,0 +1,3 @@
+"Colombia (CO)",		"BuyerBank",	"Embarcadero ERStudio Data architect"
+"Colombia (CO)",		"BoughtBank",	"Governance Console"
+"Colombia (CO)",		"BoughtBank",	"Universal Catalogue - Collibra"

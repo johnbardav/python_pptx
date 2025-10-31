@@ -1,0 +1,8 @@
+"Colombia (CO)",		"BuyerBank",	"Apigee"
+"Panamá (PA)",			"BuyerBank",	"AWS APIGW"
+"Panamá (PA)",			"BoughtBank",	"Apigee"
+"Panamá (PA)",			"BoughtBank",	"CAABAA"
+"Costa Rica (CR)",		"BuyerBank",	"CIC - ROBOT"
+"Costa Rica (CR)",		"BuyerBank",	"CIC Individual"
+"Costa Rica (CR)",		"BoughtBank",	"Apigee"
+"EEUU - Miami (US)",	"BuyerBank",	"Web Services"

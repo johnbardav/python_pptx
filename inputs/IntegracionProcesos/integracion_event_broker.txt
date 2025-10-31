@@ -1,0 +1,3 @@
+"Colombia (CO)",		"BuyerBank",	"Confluent"
+"Colombia (CO)",		"BoughtBank",	"Event Exchange/ KAFKA (Confluent)"
+"Panamá (PA)",			"BuyerBank",	"RabbitMQ"

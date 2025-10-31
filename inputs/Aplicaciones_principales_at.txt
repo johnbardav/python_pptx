@@ -1,0 +1,332 @@
+=== Consolidado de subdominios y aplicaciones ===
+
+# Canales
+
+Sitios públicos
+- Davivienda.com (Liferay) [Azul oscuro]
+- Fidudavivienda [Azul oscuro]
+- Misfinanzascasa [Azul oscuro]
+- Corredores [Azul oscuro]
+- Portal Visión [Azul oscuro]
+- Portal fiduciarias [Azul oscuro]
+
+Web Retail
+- SuperWeb Retail [Amarillo]
+
+App Retail
+- SuperApp Retail [Azul oscuro]
+
+Web Empresas
+- Portal empresarial [Amarillo]
+- Portal regional [Azul claro]
+
+App Empresas
+- SuperApp empresas [Amarillo]
+
+Call Center
+- Nueva solución CC [Amarillo]
+
+Sucursales
+- Elevate [Azul oscuro]
+- Nueva aplicación Teller CAM [Amarillo]
+
+Wallet
+- Daviplata [Azul oscuro]
+
+ATM
+- K3A [Azul oscuro]
+- ATMs locales CAM [Amarillo]
+
+POS
+- POS locales [Amarillo]
+
+Agentes
+- VIVI [Azul oscuro]
+
+
+# Canales Internos
+
+Gestión de contenidos
+- Liferay [Azul oscuro]
+
+CRM
+- Ventas [Amarillo]
+- Servicio [Amarillo]
+
+MarTech
+- Braze [Azul oscuro]
+- Bluekav [Azul oscuro]
+- Appsflyer [Azul oscuro]
+- Google Tag Manager [Azul oscuro]
+- CDP [Amarillo]
+- DAM [Amarillo]
+- Orquestación de campañas [Amarillo]
+- Gestión de consentimientos [Amarillo]
+
+
+# Integración / Procesos
+
+API Management / Gateway
+- API Management terceros [Azul oscuro]
+- API Gateway cloud native [Azul oscuro]
+
+Microservicios de Integración
+- Microservicios Canales [Azul oscuro]
+- Microservicios Producto [Azul oscuro]
+
+Eventos
+- Kafka [Azul oscuro]
+- Servicios Cloud Native [Azul oscuro]
+
+BPM
+- Orquestación de flujos [Amarillo]
+- Servicios Cloud Native [Azul oscuro]
+
+BRMS
+- Motor reglas empresarial [Azul oscuro]
+- Servicios Cloud Native [Amarillo]
+
+ESB
+- DataPower [Azul oscuro]
+
+Transferencia archivos
+- GoAnywhere [Azul oscuro]
+- Servicios Cloud Native [Azul oscuro]
+
+RPA / BOAT
+- BOAT [Amarillo]
+
+
+# Core Bancario
+
+Depósitos, cuentas, inversiones
+- Cuenta ahorro [Azul oscuro]
+- CDT Cobis [Azul oscuro]
+- SAF [Amarillo]
+- Admin. Recaudos [Azul oscuro]
+- ACE [Azul oscuro]
+- Cuenta corriente [Azul oscuro]
+- PORFIN [Amarillo]
+- SAFE [Amarillo]
+- Embargos [Azul oscuro]
+- CTO [Azul oscuro]
+- Cuenta global móvil [Azul oscuro]
+- COEASY [Azul oscuro]
+- Orion [Azul oscuro]
+- Tasas diferenciales [Azul oscuro]
+
+Créditos e hipotecas
+- FM2000 [Azul oscuro]
+- Saldos a favor [Azul oscuro]
+- SACE [Azul oscuro]
+
+Pagos y tarjetas
+- FACT [Azul oscuro]
+- ePayco [Azul oscuro]
+- SPI [Azul oscuro]
+- Postillion [Azul oscuro]
+- SEI [Azul oscuro]
+- H2H [Azul oscuro]
+
+Cobranzas
+- Gestión comercial y jurídico [Azul oscuro]
+- Cobranza Consolidación [Azul oscuro]
+- SAPRO [Azul oscuro]
+
+
+# Soporte Empresarial
+
+ERP
+- Nuevo ERP (Oracle ERP Cloud, SAP Hana, Dynamics, etc) [Amarillo]
+
+HR
+- HCM Cloud único (SAP SuccessFactors, Oracle HCM Cloud, Workday, etc) [Amarillo]
+
+Auditoría
+- Open Pages [Azul oscuro]
+- Agentes AI [Azul oscuro]
+
+Administración de contratos
+- Nueva solución Regional para Gestión de Contratos [Amarillo]
+
+Riesgos
+- SIGAR [Azul oscuro]
+- Cleafy [Azul oscuro]
+- Transmit [Azul oscuro]
+- IRIS - ServiceNow [Azul oscuro]
+- Motor PCO - Power Curve [Azul oscuro]
+- Motor de Riesgo (GMR) [Azul oscuro]
+- Motores Internos [Amarillo]
+
+Cumplimiento
+- Modelos Fraude [Azul oscuro]
+- SARLAFT [Azul oscuro]
+- Nuevo AML [Amarillo]
+
+Mercados / Tesorería / Comex
+- MEC [Azul oscuro]
+- Deceval [Azul oscuro]
+- SOB - CR [Azul oscuro]
+- Custodio - CR [Azul oscuro]
+- Orion [Azul oscuro]
+- SET FX [Azul oscuro]
+- Puesto Bolsa - CR [Azul oscuro]
+- Murex [Azul claro]
+- Reemplazo TOPAZ [Amarillo]
+- Balcam - HN [Azul oscuro]
+- Intertrade - HN [Azul oscuro]
+- Seriva - CR [Azul oscuro]
+- Bancoldex [Azul claro]
+- Nueva app Comercio intl. [Amarillo]
+- Nuevo PORFIN [Amarillo]
+- Nuevo SAF [Amarillo]
+- Nuevo SAFP [Amarillo]
+
+
+# Datos
+
+Integración, ingestión y procesamiento
+- Kafka [Azul oscuro]
+- Fivetran [Azul oscuro]
+- Dataproc [Azul oscuro]
+- Dataflow [Azul oscuro]
+
+Almacenamiento
+- Snowflake [Azul oscuro]
+- Cloud Storage [Azul oscuro]
+- Big Query [Azul oscuro]
+
+Gobierno
+- Monte Carlo Data, Datafold [Amarillo]
+- Collibra [Amarillo]
+- Vertex [Azul oscuro]
+- Dataplex [Azul oscuro]
+
+Servicios datos
+- VertexAI Feature Store, Tecton [Amarillo]
+- Dataiku [Amarillo]
+
+Consumo
+- Google Colab [Azul oscuro]
+- Vertex [Azul oscuro]
+- Dataiku [Azul oscuro]
+- Big Query [Azul oscuro]
+- Looker Studio [Azul oscuro]
+- PowerBI [Azul oscuro]
+- Visual statistics [Azul oscuro]
+- Kedro [Amarillo]
+
+Agentes
+- Gemini, Amazon Bedrock agents, Salesforce, OpenAI, Vertex [Amarillo]
+
+Modelos Fundacionales y LLMs
+- GPT, Llama, Claude [Amarillo]
+- LLMs síntesis y validación [Amarillo]
+- LLMs dominio [Amarillo]
+- LangChain, LlamaIndex [Amarillo]
+- Sagemaker, OpenAI Service, Kong Konnect [Amarillo]
+
+Creación y orquestación de Pipelines
+- Python, PySpark [Azul oscuro]
+- Cloud Composer [Azul oscuro]
+
+Seguridad de Datos
+- GCP DLP [Azul oscuro]
+- GCP KMS [Azul oscuro]
+- GCP IAM [Azul oscuro]
+- GCP Secret Manager [Azul oscuro]
+
+
+# Seguridad
+
+Seguridad de Red
+- Palo Alto Networks NGFW [Azul oscuro]
+- Netskope SASE / Zscaler [Azul oscuro]
+- Cloudflare WAF [Azul oscuro]
+- Cisco ISE / Forescout NAC [Azul oscuro]
+
+Seguridad de Endpoints
+- CrowdStrike Falcon (EDR) [Azul oscuro]
+- VMware Workspace ONE (AirWatch) [Azul oscuro]
+- Trellix (McAfee) [Azul oscuro]
+
+Seguridad en la Nube
+- Netskope (CASB) [Azul oscuro]
+- Dome9 (Check Point CloudGuard - CSPM) [Azul oscuro]
+- Trend Micro (CWPP) [Azul oscuro]
+
+Protección de Identidad
+- Microsoft Entra ID (Azure AD) [Azul oscuro]
+- Duo Security (MFA) [Azul oscuro]
+- CyberArk (PAM) [Azul oscuro]
+- 1Password / Bitwarden (Gestor de contraseñas) [Amarillo]
+- Auth0 [Azul oscuro]
+
+Protección de Datos
+- Veeam / Rubrik (Backup) [Amarillo]
+- Forcepoint DLP [Azul oscuro]
+- McAfee / Microsoft DLP [Azul oscuro]
+- AWS KMS / Azure Key Vault (Cifrado) [Azul oscuro]
+
+Operaciones y Monitoreo
+- Elastic Security / Microsoft Sentinel (SIEM) [Azul oscuro]
+- Palo Alto Cortex XSOAR (SOAR) [Amarillo]
+- Darktrace / Vectra AI (NDR) [Amarillo]
+
+Ciberinteligencia y Concientización
+- KnowBe4 / Cofense (Phishing / Awareness) [Amarillo]
+- Tenable / Qualys (Vulnerability Management) [Amarillo]
+- Recorded Future (Threat Intelligence) [Azul oscuro]
+- Fortify / Checkmarx (SAST / DAST) [Azul oscuro]
+
+
+# ADM y Operación TI
+
+Planificación, Documentación, Diseño
+- Confluence [Azul oscuro]
+- JIRA [Azul oscuro]
+- APM [Amarillo]
+
+Desarrollo
+- Github [Azul oscuro]
+- IntelliJ [Azul oscuro]
+- VSCode [Azul oscuro]
+- Github Actions [Azul oscuro]
+- Docker [Azul oscuro]
+- Simphony [Azul oscuro]
+- JFrog [Azul oscuro]
+
+Pruebas
+- POSTMAN [Azul oscuro]
+- SOAPUI [Azul oscuro]
+- KARATE [Azul oscuro]
+- SONAR [Azul oscuro]
+- Veracode [Azul oscuro]
+- JMeter [Azul oscuro]
+- Gatling [Azul oscuro]
+- Browserstack [Azul oscuro]
+- Appium [Azul oscuro]
+- Serenity BDD [Azul oscuro]
+- Selenium [Azul oscuro]
+
+Despliegue
+- Github Actions [Azul oscuro]
+- ServiceNow [Azul oscuro]
+- Helm [Azul oscuro]
+- ArgoCD, FluxCD [Amarillo]
+
+Observabilidad
+- Sitescope [Azul oscuro]
+- Controller [Azul oscuro]
+- Cloud Monitoring GCP, AWS [Azul oscuro]
+- Orca [Azul oscuro]
+- Grafana [Azul oscuro]
+- Dynatrace [Azul oscuro]
+- Nueva solución + OT [Amarillo]
+- ServiceNow [Azul claro]
+- VictorOps [Azul oscuro]
+- Tanium [Azul oscuro]
+- WSUS [Azul oscuro]
+- Admin storage [Azul oscuro]
+- VEEAM [Azul oscuro]
+- SolarWinds [Azul oscuro]

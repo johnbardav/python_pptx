@@ -1,0 +1,6 @@
+"Honduras (HN)",		"BuyerBank",	"Módulo de firmas"
+"Honduras (HN)",		"BuyerBank",	"Módulo de Inversiones"
+"Honduras (HN)",		"BuyerBank",	"SEUS"
+"Honduras (HN)",		"BuyerBank",	"DaBuenaVida - Títulos de Capitalización"
+"Honduras (HN)",		"BuyerBank",	"ICBS (International Comprehensive Banking System)"
+"EEUU - Miami (US)",	"BuyerBank",	"IBS / eIBS Core Banking System"

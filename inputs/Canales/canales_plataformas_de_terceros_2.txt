@@ -1,0 +1,3 @@
+"Costa Rica (CR)",	"BoughtBank",	"Quickpass"
+"Costa Rica (CR)",	"BoughtBank",	"BCP & PLA"
+"Costa Rica (CR)",	"BoughtBank",	"SABRE"

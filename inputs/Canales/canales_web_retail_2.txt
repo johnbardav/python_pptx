@@ -1,0 +1,4 @@
+"Honduras (HN)",		"BuyerBank",	"Banca en línea (Technisys)"
+"Honduras (HN)",		"BuyerBank",	"Estados de cuenta digital"
+"Honduras (HN)",		"BuyerBank",	"Productos Digitales HN: Seguro DAVIDA Protección"
+"EEUU - Miami (US)",	"BuyerBank",	"Banca en línea (Technisys)"

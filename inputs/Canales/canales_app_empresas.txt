@@ -1,0 +1,6 @@
+"Colombia (CO)",		"BuyerBank",	"App empresas"
+"Colombia (CO)",		"BuyerBank",	"Nueva App empresas"
+"Panamá (PA)",			"BuyerBank",	"Onespan"
+"Costa Rica (CR)",		"BoughtBank",	"Scotia token comercial"
+"El Salvador (SV)",		"BuyerBank",	"App Empresas"
+"EEUU - Miami (US)",	"BuyerBank",	"App Móvil"

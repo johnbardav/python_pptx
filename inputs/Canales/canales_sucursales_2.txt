@@ -1,0 +1,4 @@
+"Honduras (HN)",		"BuyerBank",	"Sistema de Filas Q-flow"
+"Honduras (HN)",		"BuyerBank",	"ABT – Alliant Branch Teller"
+"Honduras (HN)",		"BuyerBank",	"Autoconsulta en agencias"
+"EEUU - Miami (US)",	"BuyerBank",	"Branch capture (Teller)"

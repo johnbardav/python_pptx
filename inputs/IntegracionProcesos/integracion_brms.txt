@@ -1,0 +1,7 @@
+"Colombia (CO)",		"BuyerBank",	"Orquestador"
+"Colombia (CO)",		"BuyerBank",	"Motor Redhat"
+"Panamá (PA)",			"BuyerBank",	"Apptividad"
+"Panamá (PA)",			"BoughtBank",	"Apptividad"
+"Panamá (PA)",			"BoughtBank",	"Blaze Advisor (BNS)"
+"Costa Rica (CR)",		"BuyerBank",	"Planillas Belandria"
+"Honduras (HN)",		"BuyerBank",	"SMG3"

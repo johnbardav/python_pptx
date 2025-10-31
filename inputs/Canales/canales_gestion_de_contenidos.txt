@@ -1,0 +1,8 @@
+"Colombia (CO)",		"BuyerBank",	"WebSphere Portal"
+"Colombia (CO)",		"BuyerBank",	"Liferay"
+"Colombia (CO)",		"BoughtBank",	"Contentfull"
+"Colombia (CO)",		"BoughtBank",	"Agility CMS (IMC)"
+"Panamá (PA)",			"BuyerBank",	"WebSphere Portal"
+"Panamá (PA)",			"BuyerBank",	"Liferay"
+"Panamá (PA)",			"BoughtBank",	"AEM (Adobe)"
+"Costa Rica (CR)",		"BoughtBank",	"Agility CMS (IMC)"

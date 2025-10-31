@@ -1,0 +1,4 @@
+"El Salvador (SV)",		"BuyerBank",	"Onbase"
+"Honduras (HN)",		"BuyerBank",	"GoAnywhere"
+"Honduras (HN)",		"BuyerBank",	"TECTIA / SSH"
+"EEUU - Miami (US)",	"BuyerBank",	"GoAnywhere"
